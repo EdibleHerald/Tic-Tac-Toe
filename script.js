@@ -9,7 +9,7 @@ const board = {
         for(let i=0;i<9;i++){
             let newboard = document.createElement("div");
             newboard.id = "div"+i;
-            newboard.classList.add("boardDiv");
+            newboard.classList.add("tileDiv");
     
             let boardDiv = document.getElementById("fullBoardDiv");
             boardDiv.appendChild(newboard);
@@ -42,14 +42,22 @@ const board = {
     
 }
 
-// 
-
-board.setBoard();
-
 const timer = {
     
-    start: function(){
+    start: function(sec){
 
+        let timer = setInterval(function(){
+            document.getElementById("updateTimer").innerHTML = ""+sec;
+            sec--;
+            if(sec<0){
+                clearInterval(timer);
+            }
+        },1000)
     }
 }
+
+
+// Onload configurations
+document.querySelector("body").onload = board.setBoard();
+document.querySelector("body").onload = timer.start(0);
 

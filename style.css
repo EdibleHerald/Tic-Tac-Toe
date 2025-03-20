@@ -1,10 +1,9 @@
 
 /* title: */
 
-.title_Div{
+.titleDiv{
     display: flex;
     justify-content: center;
-    border-style:solid;
     padding-bottom:1rem;
 }
 
@@ -12,9 +11,19 @@
     border-style: solid;
     border-width: 0.40rem;
     padding: 1rem;
+    @media only screen and (hover:none) and (pointer:coarse){
+        border-width:0.25rem;
+    }
 }
 
+/* Timer related  */
 
+#timer{
+    border-style: solid;
+    border-width: 0.15rem;
+    padding: 1%;
+    justify-self: center;
+}
 
 /* Board: */
 
