@@ -18,29 +18,41 @@ We want each tile to:
 
 .tileDiv{
     border-style:solid;
-    border-width: 0.20rem;;
+    border-width: 10%;
 }
 
 
 .boardDiv{
     border-style:solid;
-    border-width:0.20rem;
+    border-width:5%;
     box-sizing: border-box;
-    width:10rem;
-    height:10rem;
+    width:33.33333333%;
+    height:33.33333333%;
+    /* background-color: red; */
 }
 
 #fullBoardDiv{
     display: flex;
     flex-wrap: wrap;
     
-    width:30rem;
-    height:30rem;
-    background-color: red;
+    width:80%;
+    height:80%;
 }
 
 #boardDivDiv{
     display: flex;
-    padding:3rem;
+    height:70vh;
+    width:70vw;
+    margin: auto;
+    padding-top: 10%;
+    padding:5%;
     justify-content: center;
+    @media only screen and (hover:none) and (pointer: coarse){
+        height:50vh;
+        width:80vw;
+    }
+}
+
+.selectedPlayer{
+    background-color: blue;
 }
