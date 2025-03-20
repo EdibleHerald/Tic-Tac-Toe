@@ -1,3 +1,6 @@
+
+/* title: */
+
 .title_Div{
     display: flex;
     justify-content: center;
@@ -11,18 +14,11 @@
     padding: 1rem;
 }
 
-/* Now Create class for divs to be created by the javascript
-We want each tile to:
-- Have a border line
-*/
+
+
+/* Tiles: */
 
 .tileDiv{
-    border-style:solid;
-    border-width: 10%;
-}
-
-
-.boardDiv{
     border-style:solid;
     border-width:5%;
     box-sizing: border-box;
@@ -39,7 +35,7 @@ We want each tile to:
     height:80%;
 }
 
-#boardDivDiv{
+#boardDivContainer{
     display: flex;
     height:70vh;
     width:70vw;
@@ -52,6 +48,9 @@ We want each tile to:
         width:80vw;
     }
 }
+
+
+/* Applied Classes */
 
 .selectedPlayer{
     background-color: blue;
