@@ -73,9 +73,10 @@ let theme = {
     },
     changeTheme: () => {
         let button = document.getElementById("theme-switch");
-        let body = document.querySelector("body");
+        let body = document.querySelector("html");
 
-        if(localStorage.getItem("darkmode") == 'active'){
+        if(localStorage.getItem("darkmode") == 'active' ){
+            body.classList.remove("darkmode");
             body.classList.add("darkmode");
 
             button.textContent = "Light Mode";
@@ -92,7 +93,7 @@ let theme = {
         }
     },
     toLight: () =>{
-        localStorage.setItem('darkmode', "false");
+        localStorage.setItem('darkmode', 'false');
         theme.changeTheme();
 
         document.getElementById("theme-switch").onclick = () => {
@@ -120,7 +121,6 @@ document.querySelector("body").onload = timer.start(0);
     // Check cookie and change theme if needed
 
 document.querySelector("head").onload = theme.check_darkmode();
-console.log(localStorage.getItem("darkmode"));
 
 
 
