@@ -42,6 +42,7 @@ const board = {
     
 }
 
+// Time related Functions
 const timer = {
     
     start: function(sec){
@@ -56,8 +57,46 @@ const timer = {
     }
 }
 
+// Settings related functions
+
+    // Theme switch
+let theme = {
+    darkmode: () => {
+            try {
+            localStorage.getItem('darkmode');
+        } catch (error) {
+            console.log(error);
+            console.log("Did not find DARKMODE active");
+        }
+    },
+    changeTheme: () => {
+        if('darkmode' == 'active'){
+            let body = document.querySelector("body");
+            body.classList.add("darkmode");
+        }else{
+            document.querySelector("body").classList.remove("darkmode");
+        }
+    },
+    toLight: () =>{
+        localStorage.setItem('darkmode', "false");
+        changeTheme;
+    },
+    toDark: () =>{
+        localStorage.setItem('darkmode','active');
+        changeTheme;
+    }
+}
+
+
 
 // Onload configurations
 document.querySelector("body").onload = board.setBoard();
 document.querySelector("body").onload = timer.start(0);
+
+    // Create 'darkmode' cookie if not already created
+document.querySelector("body").onload = () => {
+    if(localStorage.getItem("darkmode") === null){
+        localStorage.setItem("darkmode", "false");
+    }
+}
 
