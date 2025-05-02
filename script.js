@@ -45,58 +45,82 @@ const board = {
 // Time related Functions
 const timer = {
     
-    start: function(sec){
-
+    start: function(){
+        let sec = Number(document.getElementById("timerSetting").value);
         let timer = setInterval(function(){
             document.getElementById("updateTimer").innerHTML = ""+sec;
             sec--;
             if(sec<0){
                 clearInterval(timer);
+                stop;
             }
-        },1000)
+        },1000);
     }
+    //stop: Stop functions here
 }
 
 // Settings related functions
 
     // Theme switch
 let theme = {
-    darkmode: () => {
-            try {
-            localStorage.getItem('darkmode');
-        } catch (error) {
-            console.log(error);
-            console.log("Did not find DARKMODE active");
+    check_darkmode: () => {
+        if(localStorage.getItem("darkmode") === null){
+            localStorage.setItem("darkmode", "false");
+        }else{
+            theme.changeTheme();
         }
+        
     },
     changeTheme: () => {
-        if('darkmode' == 'active'){
-            let body = document.querySelector("body");
+        let button = document.getElementById("theme-switch");
+        let body = document.querySelector("body");
+
+        if(localStorage.getItem("darkmode") == 'active'){
             body.classList.add("darkmode");
+
+            button.textContent = "Light Mode";
+
+            button.onclick = () => {theme.toLight()};
+            
         }else{
-            document.querySelector("body").classList.remove("darkmode");
+            body.classList.remove("darkmode");
+            console.log("Darkmode Disabled");
+
+            button.textContent = "Dark Mode";
+
+            button.onclick = () => {theme.toDark()};
         }
     },
     toLight: () =>{
         localStorage.setItem('darkmode', "false");
-        changeTheme;
+        theme.changeTheme();
+
+        document.getElementById("theme-switch").onclick = () => {
+            theme.toDark();
+        }
     },
     toDark: () =>{
         localStorage.setItem('darkmode','active');
-        changeTheme;
+        theme.changeTheme();
+
+        document.getElementById("theme-switch").onclick = () => {
+            theme.toLight();
+        }
     }
 }
 
 
 
 // Onload configurations
+
 document.querySelector("body").onload = board.setBoard();
 document.querySelector("body").onload = timer.start(0);
 
     // Create 'darkmode' cookie if not already created
-document.querySelector("body").onload = () => {
-    if(localStorage.getItem("darkmode") === null){
-        localStorage.setItem("darkmode", "false");
-    }
-}
+    // Check cookie and change theme if needed
+
+document.querySelector("head").onload = theme.check_darkmode();
+console.log(localStorage.getItem("darkmode"));
+
+
 
