@@ -100,6 +100,10 @@ body{
     background-color: blue;
 }
 
+.selectedBot {
+    background-color: red;
+}
+
 /* Tile Border overlap clearup */
 
 #div0, #div3, #div1, #div4{
