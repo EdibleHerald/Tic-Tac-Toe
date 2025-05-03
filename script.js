@@ -147,6 +147,7 @@ const settings = {
 }
 
 // localStorage related functions
+
 const local_Storage ={
     get_theme(){
         return localStorage.getItem("darkmode");
@@ -162,25 +163,43 @@ const local_Storage ={
     }
 } 
 
-    // Let player choose who should start first (save settings too)
+// Let player choose who should start first (save settings too)
+
+
 
 
 // Actual Game Functions !!!!
 // We want tic-tac-toe using two arrays for the player and bot respectively
 // Board tiles - {0,1,2,3,4,5,6,7,8}
 const game = {
-    start:() => {
+    playerScore:[],
+    botScore:[],
+    blackList:[],
+    start(){
        // Initiate either player or bot turn depending on selected settings
        // Should only be run ONCE, use while(True) to prevent calling Start again
 
-       let playerArray = {};
-       let botArray = {};
-       let blacklistArray = {};
+       this.playerScore = [];
+       this.botScore = [];
+       this.blackList = [];
         
        // Decide on first choice
        let firstChoice = local_Storage.get_firstTurn();
-       while(True){
-        
+       
+       if(firstChoice == "player"){
+        for(let i=0;i<9;i++){
+            let tile = document.getElementById("div"+i);
+
+            tile.addEventListener("click",function(event){
+                let id = event.target.id;
+                
+                game.playerTurn(id);
+            });
+        }
+       }else if(firstChoice == "bot"){
+            game.botTurn();
+       }else{
+        console.log("ERROR: firstChoice is INCORRECTLY SET");
        }
     },
     tileSelect(chooser){
@@ -196,14 +215,65 @@ const game = {
             // Game should continue on its own
         }
     },
-    playerTurn(){
+    playerTurn(id){
+        console.log(id)
+        let array = id.split("");
+        // I need the number at the end for the array
+        // Ex. Div4 --> [D(0), I(1), V(2), 4(3)] (numbers are index in an array)
+
+        let tileNumber = Number(array[3]);
+        let allower = this.checkBlackList(tileNumber);
         
+        if(allower == false){
+            this.playerScore.push(tileNumber);
+            this.blackList.push(tileNumber);
+            this.botTurn();
+        }
     },
     botTurn(){
+        // I will probably add "difficulties later but for now, randomly generated numbers will do"
+        
+        while(true){
+            let number = Math.floor(9*Math.random());
+            let allow_number = this.checkBlackList(number);
 
+            if(allow_number == true){
+                continue;
+            }else{
+
+                this.botScore.push(number);
+                this.blackList.push(number);
+                break;
+            }
+            
+            
+        }
+    },
+    checkBlackList(number){
+        // Check inputs from either bot or player to ensure that no number is chosen more than once
+        // Simply iterate input through the blackList array
+        
+        // If player picks chosen tile, simply ignore input
+            // Return a boolean value for playerTurn() to determine next action
+        // If bot picks chosen tile, recall botTurn() to get a new input
+        console.log("he")
+        let array = this.blackList;
+        let length = array.length
+        for(let i = 0;i<length;i++){
+            if(array[i] == number){
+                return true; 
+            }
+        }
+        return false;
+    },
+    updateColor(){
+        // I want an automatic way for tiles to be color-coded.
+        // Instead of having playerTurn and botTurn handle it,
+        // I will instead have this function check both botScore and playerScore and update their respective tiles
+
+        
     }
 }
-
 
 // Onload configurations
 
@@ -215,6 +285,6 @@ document.querySelector("body").onload = timer.start(0);
 
 document.querySelector("body").onload = settings.theme.check_darkmode();
 document.querySelector("body").onload = settings.first_Go.init();
-
+game.start();
 
 
