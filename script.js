@@ -34,9 +34,10 @@ const board = {
             catch(error){
                 console.log("Does not have selectedBot class");
             } 
-            finally{
-                continue;
-            }
+            
+            selectedTile.removeEventListener("click",game.playerTile);
+
+
         }
     }
     
@@ -175,6 +176,8 @@ const game = {
     playerScore:[],
     botScore:[],
     blackList:[],
+    turnCount:0,
+    won:0,
     start(){
        // Initiate either player or bot turn depending on selected settings
        // Should only be run ONCE, use while(True) to prevent calling Start again
@@ -182,19 +185,18 @@ const game = {
        this.playerScore = [];
        this.botScore = [];
        this.blackList = [];
+       this.won = 0;
+       this.turnCount = 0;
         
        // Decide on first choice
        let firstChoice = local_Storage.get_firstTurn();
        
        if(firstChoice == "player"){
+        
         for(let i=0;i<9;i++){
             let tile = document.getElementById("div"+i);
 
-            tile.addEventListener("click",function(event){
-                let id = event.target.id;
-                
-                game.playerTurn(id);
-            });
+            tile.addEventListener("click", this.playerTile);
         }
        }else if(firstChoice == "bot"){
             game.botTurn();
@@ -222,15 +224,17 @@ const game = {
         // Ex. Div4 --> [D(0), I(1), V(2), 4(3)] (numbers are index in an array)
 
         let tileNumber = Number(array[3]);
-        console.log("I am being called");
         let allower = this.checkBlackList(tileNumber);
         
         if(allower == false){
             this.playerScore.push(tileNumber);
             this.blackList.push(tileNumber);
             this.updateColor();
+            this.turnCount +=1;
             this.winCheck();
-            this.botTurn();
+            if(this.won != 1){
+                this.botTurn();
+            }
         }
     },
     botTurn(){
@@ -246,6 +250,8 @@ const game = {
 
                 this.botScore.push(number);
                 this.blackList.push(number);
+                this.updateColor();
+                this.turnCount +=1;
                 this.winCheck();
                 break;
             }
@@ -260,10 +266,8 @@ const game = {
         // If player picks chosen tile, simply ignore input
             // Return a boolean value for playerTurn() to determine next action
         // If bot picks chosen tile, recall botTurn() to get a new input
-        console.log("he")
         let array = this.blackList;
-        let length = array.length
-        console.log("infiny loop")
+        let length = array.length;
         for(let i = 0;i<length;i++){
             if(array[i] == number){
                 return true; 
@@ -287,6 +291,16 @@ const game = {
             }
         })
 
+        // check bot tiles
+        this.botScore.forEach((number)=>{
+            let id = "div" + number;
+            let tile = document.getElementById(id);
+
+            if( !(tile.classList.contains("selectedBot")) ){
+                tile.classList.add("selectedBot");
+            }
+        })
+
     },
     winCheck(){
         // I want to check for wins after each turn. 
@@ -295,9 +309,6 @@ const game = {
         // [0 1 2
         //  3 4 5
         //  6 7 8]
-        
-        botArr = this.botScore;
-        playerArr = this.playerScore;
 
         // Rows
         for(let i = 0;i<7;i){
@@ -354,14 +365,37 @@ const game = {
             this.endGame("bot");
         }
 
+        // Check for tie
+        if(this.turnCount >= 9){
+            this.endGame("tie");
+        }
+
         // Might make comparsions into a seperate function later on as this is a little hard to read
     },
     endGame(name){
         // End game, preferably by stating winner then wiping the board
 
         if(name == "player"){
-            
+            console.log("Player wins!");
+        }else if(name == "bot"){
+            console.log("Bot Wins!")
+        }else if(name == "tie"){
+            console.log("Tied!")
+        }else{
+            console.log("nobody won??")
         }
+        console.log(this.turnCount)
+
+        board.resetBoard();
+        this.botScore = [];
+        this.playerScore = [];
+        this.blackList = [];
+        this.won=1;
+    },
+    playerTile(event){
+        let id = event.target.id;
+        game.playerTurn(id);
+        
     }
 }
 
