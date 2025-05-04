@@ -222,11 +222,13 @@ const game = {
         // Ex. Div4 --> [D(0), I(1), V(2), 4(3)] (numbers are index in an array)
 
         let tileNumber = Number(array[3]);
+        console.log("I am being called");
         let allower = this.checkBlackList(tileNumber);
         
         if(allower == false){
             this.playerScore.push(tileNumber);
             this.blackList.push(tileNumber);
+            //this.updateColor();
             this.botTurn();
         }
     },
@@ -259,11 +261,13 @@ const game = {
         console.log("he")
         let array = this.blackList;
         let length = array.length
+        console.log("infiny loop")
         for(let i = 0;i<length;i++){
             if(array[i] == number){
                 return true; 
             }
         }
+        console.log("infinite loop")
         return false;
     },
     updateColor(){
@@ -271,7 +275,84 @@ const game = {
         // Instead of having playerTurn and botTurn handle it,
         // I will instead have this function check both botScore and playerScore and update their respective tiles
 
+        // check player tiles
+        this.playerScore.forEach((number)=>{
+            let id = "div" + number;
+            let tile = document.getElementById(id);
+
+            if( !(tile.classList.contains("selectedPlayer")) ){
+                tile.classList.add("selectedPlayer");
+            }
+        })
+
+    },
+    winCheck(){
+        // I want to check for wins after each turn. 
+        // I want to do this by checking each row,column and diagnol
+        // I also need to check for both player and bot seperately
+        // [0 1 2
+        //  3 4 5
+        //  6 7 8]
         
+        botArr = this.botScore;
+        playerArr = this.playerScore;
+
+        // Rows
+        for(let i = 0;i<7;i){
+            let array = [i,i+1,i+2];
+            
+
+            if(array.every((element)=>{
+                return this.playerScore.includes(element);
+            })){
+                this.endGame("player");
+            }else if(array.every((element)=>{
+                return this.botScore.includes(element);
+            })){
+                this.endGame("bot");
+            }
+            i+=3;
+        }
+
+        //Columns
+        for(let i = 0;i<3;i++){
+            let array = [i,i+3,i+6];
+            if(array.every((element)=>{
+               return this.playerScore.includes(element);
+            })){
+                this.endGame("player");
+            }else if(array.every((element)=>{
+               return this.botScore.includes(element);
+            })){
+                this.endGame("bot");
+            }
+        }
+        
+        // Just gonna write in the diagonals myself since they're annoying to deal with
+        let diagonal1 = [0,4,8];
+        let diagonal2 = [2,4,6];
+
+        if(diagonal1.every( (element)=> {
+           return this.playerScore.includes(element);
+        })){
+            this.endGame("player");
+        } else if(diagonal1.every( (element)=> {
+            return this.botScore.includes(element);
+        })){
+            this.endGame("bot");
+        }
+
+        if(diagonal2.every( (element)=> {
+           return this.playerScore.includes(element);
+        })){
+            this.endGame("player");
+        } else if(diagonal2.every( (element)=> {
+            return this.botScore.includes(element);
+        })){
+            this.endGame("bot");
+        }
+
+        // Might make comparsions into a seperate function later on as this is a little hard to read
     }
 }
 
