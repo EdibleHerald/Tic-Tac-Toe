@@ -228,7 +228,8 @@ const game = {
         if(allower == false){
             this.playerScore.push(tileNumber);
             this.blackList.push(tileNumber);
-            //this.updateColor();
+            this.updateColor();
+            this.winCheck();
             this.botTurn();
         }
     },
@@ -245,6 +246,7 @@ const game = {
 
                 this.botScore.push(number);
                 this.blackList.push(number);
+                this.winCheck();
                 break;
             }
             
@@ -353,6 +355,13 @@ const game = {
         }
 
         // Might make comparsions into a seperate function later on as this is a little hard to read
+    },
+    endGame(name){
+        // End game, preferably by stating winner then wiping the board
+
+        if(name == "player"){
+            
+        }
     }
 }
 
