@@ -17,6 +17,10 @@ const board = {
     },
     resetBoard: function(){
         // Wipe attributes
+        this.resetBoardColors();
+        this.resetBoardListeners();
+    },
+    resetBoardColors:function(){
         for(let i=0;i<9;i++){
             let selectedTile = document.getElementById("div"+i);
 
@@ -34,10 +38,13 @@ const board = {
             catch(error){
                 console.log("Does not have selectedBot class");
             } 
+        }
+    },
+    resetBoardListeners:function(){
+        for(let i=0;i<9;i++){
+            let selectedTile = document.getElementById("div"+i);
             
             selectedTile.removeEventListener("click",game.playerTile);
-
-
         }
     }
     
@@ -45,7 +52,7 @@ const board = {
 
 // Time related Functions
 const timer = {
-    
+    // For Timer under title
     start: function(){
         let sec = Number(document.getElementById("timerSetting").value);
         let timer = setInterval(function(){
@@ -55,6 +62,12 @@ const timer = {
                 clearInterval(timer);
             }
         },1000);
+    },
+    wait: function(ms){
+        return new Promise(resolve => setTimeout(resolve,ms));
+    },
+    timeout:async function main(ms){
+        await this.wait(ms);
     }
     //stop: Stop functions here
 }
@@ -273,7 +286,6 @@ const game = {
                 return true; 
             }
         }
-        console.log("infinite loop")
         return false;
     },
     updateColor(){
@@ -366,15 +378,15 @@ const game = {
         }
 
         // Check for tie
-        if(this.turnCount >= 9){
+        if(this.turnCount >= 9 && this.won != 1){
             this.endGame("tie");
         }
 
         // Might make comparsions into a seperate function later on as this is a little hard to read
     },
-    endGame(name){
+    async endGame(name){
         // End game, preferably by stating winner then wiping the board
-
+        console.trace("endGame Called");
         if(name == "player"){
             console.log("Player wins!");
         }else if(name == "bot"){
@@ -384,13 +396,21 @@ const game = {
         }else{
             console.log("nobody won??")
         }
-        console.log(this.turnCount)
-
-        board.resetBoard();
+        // I want the final board to stay visible for 3 seconds after winning!
+        // First we remove any event listeners!
+        console.log("test");
+        board.resetBoardListeners();
         this.botScore = [];
         this.playerScore = [];
         this.blackList = [];
         this.won=1;
+        await timer.timeout(3000);
+
+        
+
+        board.resetBoardColors();
+        
+
     },
     playerTile(event){
         let id = event.target.id;
