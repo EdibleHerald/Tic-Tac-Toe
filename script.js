@@ -194,28 +194,34 @@ const game = {
     start(){
        // Initiate either player or bot turn depending on selected settings
        // Should only be run ONCE, use while(True) to prevent calling Start again
-
-       this.playerScore = [];
-       this.botScore = [];
-       this.blackList = [];
-       this.won = 0;
-       this.turnCount = 0;
+       console.log("started");
+       game.playerScore = [];
+       game.botScore = [];
+       game.blackList = [];
+       game.won = 0;
+       game.turnCount = 0;
         
        // Decide on first choice
        let firstChoice = local_Storage.get_firstTurn();
-       
+       console.log(firstChoice);
        if(firstChoice == "player"){
-        
+        console.log("player goes first");
         for(let i=0;i<9;i++){
             let tile = document.getElementById("div"+i);
-
-            tile.addEventListener("click", this.playerTile);
+            console.log(tile);
+            tile.addEventListener("click", game.playerTile);
         }
        }else if(firstChoice == "bot"){
             game.botTurn();
        }else{
         console.log("ERROR: firstChoice is INCORRECTLY SET");
        }
+
+       // Change START button to STOP
+       let button = document.getElementById("startButton");
+       button.textContent = "STOP";
+       button.removeEventListener("click",game.start);
+       button.addEventListener("click",game.endGame);
     },
     tileSelect(chooser){
         if(chooser=="player"){
@@ -231,13 +237,12 @@ const game = {
         }
     },
     playerTurn(id){
-        console.log(id)
         let array = id.split("");
         // I need the number at the end for the array
         // Ex. Div4 --> [D(0), I(1), V(2), 4(3)] (numbers are index in an array)
 
         let tileNumber = Number(array[3]);
-        let allower = this.checkBlackList(tileNumber);
+        let allower = game.checkBlackList(tileNumber);
         
         if(allower == false){
             this.playerScore.push(tileNumber);
@@ -246,7 +251,7 @@ const game = {
             this.turnCount +=1;
             this.winCheck();
             if(this.won != 1){
-                this.botTurn();
+                game.botTurn();
             }
         }
     },
@@ -255,17 +260,17 @@ const game = {
         
         while(true){
             let number = Math.floor(9*Math.random());
-            let allow_number = this.checkBlackList(number);
+            let allow_number = game.checkBlackList(number);
 
             if(allow_number == true){
                 continue;
             }else{
 
-                this.botScore.push(number);
-                this.blackList.push(number);
-                this.updateColor();
-                this.turnCount +=1;
-                this.winCheck();
+                game.botScore.push(number);
+                game.blackList.push(number);
+                game.updateColor();
+                game.turnCount +=1;
+                game.winCheck();
                 break;
             }
             
@@ -279,7 +284,7 @@ const game = {
         // If player picks chosen tile, simply ignore input
             // Return a boolean value for playerTurn() to determine next action
         // If bot picks chosen tile, recall botTurn() to get a new input
-        let array = this.blackList;
+        let array = game.blackList;
         let length = array.length;
         for(let i = 0;i<length;i++){
             if(array[i] == number){
@@ -328,13 +333,13 @@ const game = {
             
 
             if(array.every((element)=>{
-                return this.playerScore.includes(element);
+                return game.playerScore.includes(element);
             })){
-                this.endGame("player");
+                game.endGame("player");
             }else if(array.every((element)=>{
-                return this.botScore.includes(element);
+                return game.botScore.includes(element);
             })){
-                this.endGame("bot");
+                game.endGame("bot");
             }
             i+=3;
         }
@@ -343,13 +348,13 @@ const game = {
         for(let i = 0;i<3;i++){
             let array = [i,i+3,i+6];
             if(array.every((element)=>{
-               return this.playerScore.includes(element);
+               return game.playerScore.includes(element);
             })){
-                this.endGame("player");
+                game.endGame("player");
             }else if(array.every((element)=>{
-               return this.botScore.includes(element);
+               return game.botScore.includes(element);
             })){
-                this.endGame("bot");
+                game.endGame("bot");
             }
         }
         
@@ -358,35 +363,34 @@ const game = {
         let diagonal2 = [2,4,6];
 
         if(diagonal1.every( (element)=> {
-           return this.playerScore.includes(element);
+           return game.playerScore.includes(element);
         })){
-            this.endGame("player");
+            game.endGame("player");
         } else if(diagonal1.every( (element)=> {
-            return this.botScore.includes(element);
+            return game.botScore.includes(element);
         })){
-            this.endGame("bot");
+            game.endGame("bot");
         }
 
         if(diagonal2.every( (element)=> {
-           return this.playerScore.includes(element);
+           return game.playerScore.includes(element);
         })){
-            this.endGame("player");
+            game.endGame("player");
         } else if(diagonal2.every( (element)=> {
-            return this.botScore.includes(element);
+            return game.botScore.includes(element);
         })){
-            this.endGame("bot");
+            game.endGame("bot");
         }
 
         // Check for tie
-        if(this.turnCount >= 9 && this.won != 1){
-            this.endGame("tie");
+        if(game.turnCount >= 9 && game.won != 1){
+            game.endGame("tie");
         }
 
         // Might make comparsions into a seperate function later on as this is a little hard to read
     },
     async endGame(name){
         // End game, preferably by stating winner then wiping the board
-        console.trace("endGame Called");
         if(name == "player"){
             console.log("Player wins!");
         }else if(name == "bot"){
@@ -396,18 +400,20 @@ const game = {
         }else{
             console.log("nobody won??")
         }
+        let button = document.getElementById("startButton");
         // I want the final board to stay visible for 3 seconds after winning!
         // First we remove any event listeners!
-        console.log("test");
         board.resetBoardListeners();
-        this.botScore = [];
-        this.playerScore = [];
-        this.blackList = [];
-        this.won=1;
+        game.botScore = [];
+        game.playerScore = [];
+        game.blackList = [];
+        game.won=1;
+        button.textContent = "Waiting...";
+        button.removeEventListener("click",game.endGame);
         await timer.timeout(3000);
 
-        
-
+        button.textContent = "START";
+        button.addEventListener("click",game.start);
         board.resetBoardColors();
         
 
@@ -429,6 +435,5 @@ document.querySelector("body").onload = timer.start(0);
 
 document.querySelector("body").onload = settings.theme.check_darkmode();
 document.querySelector("body").onload = settings.first_Go.init();
-game.start();
-
+document.getElementById("startButton").addEventListener("click",game.start);
 
